@@ -58,15 +58,15 @@
 
 (defun chep-var-at-point (element)
   "Returns the text of a variable declaration"
-  (if (looking-at (concat "^\\([a-Z][a-Z0-9_]*[ \n\t]*\\)+\\*?[ \n\t]*"
-						  element
-						  "[ \t\n]*\\(=[ \t\n]*\\([ \tA-z0-9_(),]+\\)*\\)*;"))
-	  (let ((start (point)))
-		(search-forward ";")
-		(buffer-substring start (point)))
-	  nil))
-
-
+  (save-excursion
+	(let ((start (point)) (ret ""))
+	  (if (looking-back"\\(\\(typedef\\|const\\|extern\\|static\\)[ \t\n]*\\)+" nil t)
+		  (setq ret (match-string 0)))
+	  (search-forward element)
+	  (if (looking-at "[ \t\n]*\\(=[ \t\n]*[ \t\na-zA-Z0-9_(),{}+\\.=\\*\\&]*\\)?;")
+		  (progn (search-forward ";")
+				 (concat ret (buffer-substring start (point))))
+		  nil))))
 
 (defun chep-struct-at-point (element)
   "Returns the text of a struct/class/union/enum declaration"
