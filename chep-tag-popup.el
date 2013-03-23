@@ -60,12 +60,16 @@
   "Returns the text of a variable declaration"
   (save-excursion
 	(let ((start (point)) (ret ""))
-	  (if (looking-back"\\(\\(typedef\\|const\\|extern\\|static\\)[ \t\n]*\\)+" nil t)
+	  (if (looking-back"\\(\\(const\\|extern\\|static\\)[ \t\n]*\\)+" nil t)
 		  (setq ret (match-string 0)))
-	  (search-forward element)
-	  (if (looking-at "[ \t\n]*\\(=[ \t\n]*[ \t\na-zA-Z0-9_(),{}+\\.=\\*\\&]*\\)?;")
-		  (progn (search-forward ";")
-				 (concat ret (buffer-substring start (point))))
+	  (if (looking-at (concat "[ \t\n]*\\(\\(const\\|extern\\|static\\)[ \t\n]*\\)*"
+							  "[a-zA-Z_][a-zA-Z0-9_]*[ \t\n]*\\*?[ \t\n]*"
+							  element))
+		  (progn (search-forward element)
+				 (if (looking-at "[ \t\n]*\\(=[ \t\n]*[ \t\na-zA-Z0-9_(),{}+\\.=\\*\\&]*\\)?;")
+					 (progn (search-forward ";")
+							(concat ret (buffer-substring start (point))))
+				     nil))
 		  nil))))
 
 (defun chep-struct-at-point (element)
