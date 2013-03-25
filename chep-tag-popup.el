@@ -63,10 +63,12 @@
 	  (if (looking-back"\\(\\(const\\|extern\\|static\\)[ \t\n]*\\)+" nil t)
 		  (setq ret (match-string 0)))
 	  (if (looking-at (concat "[ \t\n]*\\(\\(const\\|extern\\|static\\)[ \t\n]*\\)*"
-							  "[a-zA-Z_][a-zA-Z0-9_]*[ \t\n]*\\*?[ \t\n]*"
+							  "\\([a-zA-Z_][a-zA-Z0-9_]*[ \t\n]\\)+\\*?[ \t\n]*"
 							  element))
 		  (progn (search-forward element)
-				 (if (looking-at "[ \t\n]*\\(=[ \t\n]*[ \t\na-zA-Z0-9_(),{}+\\.=\\*\\&]*\\)?;")
+				 (if (looking-at (concat "[ \t\n]*\\(\\[.*\\]\\)?"
+										 "[ \t\n]*"
+										 "\\(=[ \t\n]*[^;]*\\)?;"))
 					 (progn (search-forward ";")
 							(concat ret (buffer-substring start (point))))
 				     nil))
