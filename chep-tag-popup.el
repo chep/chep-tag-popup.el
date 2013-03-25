@@ -56,15 +56,23 @@
 
 (provide 'chep-tag-popup)
 
+(defconst chep-keyword "\\(const\\|extern\\|static\\)")
+(defconst chep-standard-types "\\(\\(unsigned\\|char\\|int\\|long\\|float\\|double\\|void\\|short\\)[ \t\n]*\\)")
+(defconst chep-custom-type "\\([a-zA-Z_][a-zA-Z0-9_]*[ \t\n]*\\)")
+(defconst chep-var-name (concat "\\*?[ \t\n]*"
+								chep-custom-type
+								"[ \t\n]*\\(=[ \t\n]*[^;]*\\)?[ \t\n]*"))
+
 (defun chep-var-at-point (element)
   "Returns the text of a variable declaration"
   (save-excursion
 	(let ((start (point)) (ret ""))
-	  (if (looking-back"\\(\\(const\\|extern\\|static\\)[ \t\n]*\\)+" nil t)
+	  (if (looking-back (concat "\\(" chep-keyword "[ \t\n]*\\)+"))
 		  (setq ret (match-string 0)))
-	  (if (looking-at (concat "[ \t\n]*\\(\\(const\\|extern\\|static\\)[ \t\n]*\\)*"
-							  "\\([a-zA-Z_][a-zA-Z0-9_]*[ \t\n]\\)+\\*?[ \t\n]*"
-							  element))
+	  (if (looking-at (concat "[ \t\n]*\\(" chep-keyword "[ \t\n]*\\)*"
+							  "\\(" chep-standard-types "+\\|" chep-custom-type "\\)"
+							  "\\(" chep-var-name ",[ \t\n]\\)*"
+							  "\\*?[ \t\n]*" element))
 		  (progn (search-forward element)
 				 (if (looking-at (concat "[ \t\n]*\\(\\[.*\\]\\)?"
 										 "[ \t\n]*"
