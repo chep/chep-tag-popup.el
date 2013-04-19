@@ -58,7 +58,7 @@
 
 (defconst chep-keyword "\\(const\\|extern\\|static\\)")
 (defconst chep-standard-types "\\(\\(unsigned\\|char\\|int\\|long\\|float\\|double\\|void\\|short\\)[ \t\n]*\\)")
-(defconst chep-custom-type "\\([a-zA-Z_][a-zA-Z0-9_]*[ \t\n]*\\)")
+(defconst chep-custom-type "\\(union\\|struct\\)?[ \t\n]*\\([a-zA-Z_][a-zA-Z0-9_]*[ \t\n]*\\)")
 (defconst chep-var-name (concat "\\*?[ \t\n]*"
 								chep-custom-type
 								"[ \t\n]*\\(=[ \t\n]*[^;]*\\)?[ \t\n]*"))
@@ -73,7 +73,10 @@
 							  "\\(" chep-standard-types "+\\|" chep-custom-type "\\)"
 							  "\\(" chep-var-name ",[ \t\n]\\)*"
 							  "\\*?[ \t\n]*" element))
-		  (progn (search-forward element)
+		  (progn (search-forward-regexp (concat "[^a-zA-Z_0-9]"
+												element
+												"[^a-zA-Z_0-9]"))
+				 (backward-char)
 				 (if (looking-at (concat "[ \t\n]*\\(\\[.*\\]\\)?"
 										 "[ \t\n]*"
 										 "\\(=[ \t\n]*[^;]*\\)?;"))
