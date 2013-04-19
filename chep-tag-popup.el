@@ -116,7 +116,7 @@
 (defun chep-macro-at-point (element)
   "Return the text of a macro declaration"
   (save-excursion
-	(if (looking-at (concat "^#define "
+	(if (looking-at (concat "^[ \t\n]*#define[ \t\n]*"
 							element
 							"\\(.*\\\\\n\\)*.*\n"))
 		(match-string 0)
