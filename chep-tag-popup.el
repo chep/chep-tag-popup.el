@@ -102,6 +102,15 @@
 				 (buffer-substring start (point)))))))
 
 
+(defun chep-typedef-at-point (element)
+  "Returns the text of a typedef declaration"
+  (save-excursion
+	(if (looking-at (concat "^[ \n\t]*\\(typedef\\)[ \n\t]*"
+							"\\(" chep-standard-types "+\\|" chep-custom-type "\\)"
+							element "[ \n\t]*;"))
+		(match-string 0)
+	    nil)))
+
 
 (defun chep-func-at-point (element)
   "Returns the text of a function declaration"
@@ -143,10 +152,11 @@
 					  (if (not result)
 						  (progn (setq result (chep-macro-at-point search))
 								 (if (not result)
-									 (progn (setq result (chep-struct-at-point search))
+									 (progn (setq result (chep-typedef-at-point search))
 											(if (not result)
-												(progn (setq result (chep-func-at-point search))
-													   ))))))
+												(progn (setq result (chep-struct-at-point search))
+													   (if (not result)
+														   (progn (setq result (chep-func-at-point search))))))))))
 					  ;;Retour 
 					  (pop-tag-mark)))
 
